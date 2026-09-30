@@ -100,7 +100,7 @@ class MainActivity : AppCompatActivity() {
         devices = adapter.bondedDevices.sortedBy { it.name ?: it.address }
         spinner.adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item,
             devices.map { "${it.name ?: "?"} (${it.address})" })
-        if (devices.isEmpty()) log("No hay dispositivos vinculados. Vincula "ESP-Proxy" en los ajustes de Android.")
+        if (devices.isEmpty()) log("No hay dispositivos vinculados. Vincula ESP-Proxy en los ajustes de Android.")
     }
 
     private fun toggleConnection() {

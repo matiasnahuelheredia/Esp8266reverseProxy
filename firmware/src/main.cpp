@@ -17,13 +17,13 @@ static BluetoothSerial BT;
 
 static const size_t OTA_BLOCK = 1024;
 static const uint32_t OTA_TIMEOUT_MS = 15000;
-static const size_t LINE_MAX = 200;
+static const size_t CMD_LINE_MAX = 200;
 
 static Config cfg;       // configuracion guardada (la que esta en uso)
 static Config pending;   // configuracion editada con SET, aun sin SAVE
 static ReverseProxy proxy;
 
-static char line[LINE_MAX + 1];
+static char line[CMD_LINE_MAX + 1];
 static size_t lineLen = 0;
 
 // --- Estado OTA por Bluetooth -------------------------------------------
@@ -252,7 +252,7 @@ static void btLoop() {
       lineLen = 0;
       handleLine(String(line));
       if (otaActive) return;  // el resto de bytes son datos binarios
-    } else if (lineLen < LINE_MAX) {
+    } else if (lineLen < CMD_LINE_MAX) {
       line[lineLen++] = ch;
     } else {
       lineLen = 0;  // linea demasiado larga: descartar
