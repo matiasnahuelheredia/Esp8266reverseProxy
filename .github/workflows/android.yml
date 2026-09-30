@@ -2,7 +2,7 @@ name: App Android
 
 on:
   push:
-    branches: [main]
+    branches: [main, 'claude/**']
     tags: ['v*']
     paths: ['android/**', '.github/workflows/android.yml']
   pull_request:
