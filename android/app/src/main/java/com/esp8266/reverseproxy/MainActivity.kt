@@ -80,7 +80,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun log(msg: String) {
-        tvLog.append(msg + "\n")
+        tvLog.append("> " + msg + "\n")
     }
 
     // --- Bluetooth ---

@@ -2,6 +2,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/bg"
     android:fillViewport="true"
     android:fitsSystemWindows="true">
 
@@ -11,76 +12,109 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-        <TextView style="@style/TextAppearance.Material3.TitleMedium"
+        <TextView style="@style/Cyber.Title" android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:text="ESP//PROXY" />
+        <TextView style="@style/Cyber.Subtitle" android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:layout_marginTop="4dp"
+            android:text="&gt; NEURAL LINK v2.0 // ESP32 BRIDGE" />
+        <View android:layout_width="match_parent" android:layout_height="2dp"
+            android:layout_marginTop="12dp" android:background="@drawable/bg_neon_line" />
+
+        <LinearLayout
             android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:text="1. Conexion Bluetooth" />
-        <Spinner android:id="@+id/spinnerDevices"
-            android:layout_width="match_parent" android:layout_height="wrap_content" />
-        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:orientation="horizontal">
-            <Button android:id="@+id/btnRefresh" android:layout_width="0dp"
-                android:layout_height="wrap_content" android:layout_weight="1" android:text="Actualizar" />
-            <Button android:id="@+id/btnConnect" android:layout_width="0dp"
-                android:layout_height="wrap_content" android:layout_weight="1" android:text="Conectar" />
-        </LinearLayout>
-        <TextView android:id="@+id/tvState" android:layout_width="match_parent"
-            android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="Desconectado" />
-        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:orientation="horizontal">
-            <Button android:id="@+id/btnStatus" android:layout_width="0dp"
-                android:layout_height="wrap_content" android:layout_weight="1" android:text="Estado" />
-            <Button android:id="@+id/btnReboot" android:layout_width="0dp"
-                android:layout_height="wrap_content" android:layout_weight="1" android:text="Reiniciar" />
+            android:layout_marginTop="20dp" android:background="@drawable/bg_panel"
+            android:orientation="vertical" android:padding="16dp"
+            android:divider="@drawable/div_v" android:showDividers="middle">
+            <TextView style="@style/Cyber.Section" android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:text="// 01 ENLACE BLUETOOTH" />
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:background="@drawable/bg_input">
+                <Spinner android:id="@+id/spinnerDevices" android:layout_width="match_parent"
+                    android:layout_height="48dp" android:popupBackground="@color/surface" />
+            </LinearLayout>
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="horizontal" android:divider="@drawable/div_v" android:showDividers="middle">
+                <Button android:id="@+id/btnRefresh" style="@style/Cyber.Button" android:layout_width="0dp"
+                    android:layout_height="wrap_content" android:layout_weight="1" android:text="Actualizar" />
+                <Button android:id="@+id/btnConnect" style="@style/Cyber.Button.Hot" android:layout_width="0dp"
+                    android:layout_height="wrap_content" android:layout_weight="1" android:text="Conectar" />
+            </LinearLayout>
+            <TextView android:id="@+id/tvState" style="@style/Cyber.Terminal" android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:background="@drawable/bg_terminal"
+                android:padding="12dp" android:text="Desconectado" />
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="horizontal" android:divider="@drawable/div_v" android:showDividers="middle">
+                <Button android:id="@+id/btnStatus" style="@style/Cyber.Button" android:layout_width="0dp"
+                    android:layout_height="wrap_content" android:layout_weight="1" android:text="Estado" />
+                <Button android:id="@+id/btnReboot" style="@style/Cyber.Button" android:layout_width="0dp"
+                    android:layout_height="wrap_content" android:layout_weight="1" android:text="Reiniciar" />
+            </LinearLayout>
         </LinearLayout>
 
-        <TextView style="@style/TextAppearance.Material3.TitleMedium"
+        <LinearLayout
             android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:layout_marginTop="16dp" android:text="2. Configuracion" />
-        <EditText android:id="@+id/etSsid" android:layout_width="match_parent"
-            android:layout_height="wrap_content" android:hint="SSID de la red WiFi"
-            android:inputType="text" android:autofillHints="" />
-        <EditText android:id="@+id/etPass" android:layout_width="match_parent"
-            android:layout_height="wrap_content" android:hint="Contrasena WiFi"
-            android:inputType="textPassword" android:autofillHints="" />
-        <EditText android:id="@+id/etHost" android:layout_width="match_parent"
-            android:layout_height="wrap_content" android:hint="Destino del proxy (IP o dominio)"
-            android:inputType="textUri" android:autofillHints="" />
-        <EditText android:id="@+id/etPort" android:layout_width="match_parent"
-            android:layout_height="wrap_content" android:hint="Puerto destino"
-            android:inputType="number" android:autofillHints="" />
-        <EditText android:id="@+id/etListen" android:layout_width="match_parent"
-            android:layout_height="wrap_content" android:hint="Puerto de escucha del ESP32"
-            android:inputType="number" android:autofillHints="" />
-        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:orientation="horizontal">
-            <Button android:id="@+id/btnScan" android:layout_width="0dp"
-                android:layout_height="wrap_content" android:layout_weight="1" android:text="Buscar redes" />
-            <Button android:id="@+id/btnLoad" android:layout_width="0dp"
-                android:layout_height="wrap_content" android:layout_weight="1" android:text="Leer" />
-            <Button android:id="@+id/btnSave" android:layout_width="0dp"
-                android:layout_height="wrap_content" android:layout_weight="1" android:text="Guardar" />
+            android:layout_marginTop="20dp" android:background="@drawable/bg_panel"
+            android:orientation="vertical" android:padding="16dp"
+            android:divider="@drawable/div_v" android:showDividers="middle">
+            <TextView style="@style/Cyber.Section" android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:text="// 02 CONFIGURACION DEL NODO" />
+            <EditText android:id="@+id/etSsid" style="@style/Cyber.Input" android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:hint="SSID de la red WiFi" android:inputType="text"
+                android:autofillHints="" />
+            <EditText android:id="@+id/etPass" style="@style/Cyber.Input" android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:hint="Contrasena WiFi" android:inputType="textPassword"
+                android:autofillHints="" />
+            <EditText android:id="@+id/etHost" style="@style/Cyber.Input" android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:hint="Destino del proxy (IP o dominio)" android:inputType="textUri"
+                android:autofillHints="" />
+            <EditText android:id="@+id/etPort" style="@style/Cyber.Input" android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:hint="Puerto destino" android:inputType="number"
+                android:autofillHints="" />
+            <EditText android:id="@+id/etListen" style="@style/Cyber.Input" android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:hint="Puerto de escucha del ESP32" android:inputType="number"
+                android:autofillHints="" />
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="horizontal" android:divider="@drawable/div_v" android:showDividers="middle">
+                <Button android:id="@+id/btnScan" style="@style/Cyber.Button" android:layout_width="0dp"
+                    android:layout_height="wrap_content" android:layout_weight="1" android:text="Buscar redes" />
+                <Button android:id="@+id/btnLoad" style="@style/Cyber.Button" android:layout_width="0dp"
+                    android:layout_height="wrap_content" android:layout_weight="1" android:text="Leer" />
+                <Button android:id="@+id/btnSave" style="@style/Cyber.Button.Hot" android:layout_width="0dp"
+                    android:layout_height="wrap_content" android:layout_weight="1" android:text="Guardar" />
+            </LinearLayout>
         </LinearLayout>
 
-        <TextView style="@style/TextAppearance.Material3.TitleMedium"
+        <LinearLayout
             android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:layout_marginTop="16dp" android:text="3. Actualizar firmware (.bin)" />
-        <TextView android:id="@+id/tvFile" android:layout_width="match_parent"
-            android:layout_height="wrap_content" android:text="Ningun archivo" />
-        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:orientation="horizontal">
-            <Button android:id="@+id/btnPick" android:layout_width="0dp"
-                android:layout_height="wrap_content" android:layout_weight="1" android:text="Elegir .bin" />
-            <Button android:id="@+id/btnUpload" android:layout_width="0dp"
-                android:layout_height="wrap_content" android:layout_weight="1" android:text="Subir" />
+            android:layout_marginTop="20dp" android:background="@drawable/bg_panel"
+            android:orientation="vertical" android:padding="16dp"
+            android:divider="@drawable/div_v" android:showDividers="middle">
+            <TextView style="@style/Cyber.Section" android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:text="// 03 FLASHEO DE FIRMWARE (.BIN)" />
+            <TextView android:id="@+id/tvFile" style="@style/Cyber.Body" android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:text="Ningun archivo" />
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="horizontal" android:divider="@drawable/div_v" android:showDividers="middle">
+                <Button android:id="@+id/btnPick" style="@style/Cyber.Button" android:layout_width="0dp"
+                    android:layout_height="wrap_content" android:layout_weight="1" android:text="Elegir .bin" />
+                <Button android:id="@+id/btnUpload" style="@style/Cyber.Button.Hot" android:layout_width="0dp"
+                    android:layout_height="wrap_content" android:layout_weight="1" android:text="Subir" />
+            </LinearLayout>
+            <ProgressBar android:id="@+id/progress" style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent" android:layout_height="wrap_content" android:max="100"
+                android:progressTint="@color/neon_magenta" android:progressBackgroundTint="@color/dim" />
         </LinearLayout>
-        <ProgressBar android:id="@+id/progress" style="?android:attr/progressBarStyleHorizontal"
-            android:layout_width="match_parent" android:layout_height="wrap_content" android:max="100" />
 
-        <TextView style="@style/TextAppearance.Material3.TitleMedium"
+        <LinearLayout
             android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:layout_marginTop="16dp" android:text="Registro" />
-        <TextView android:id="@+id/tvLog" android:layout_width="match_parent"
-            android:layout_height="wrap_content" android:fontFamily="monospace"
-            android:textIsSelectable="true" android:textSize="12sp" />
+            android:layout_marginTop="20dp" android:background="@drawable/bg_panel"
+            android:orientation="vertical" android:padding="16dp"
+            android:divider="@drawable/div_v" android:showDividers="middle">
+            <TextView style="@style/Cyber.Section" android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:text="// CONSOLA" />
+            <TextView android:id="@+id/tvLog" style="@style/Cyber.Terminal" android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:background="@drawable/bg_terminal"
+                android:minHeight="120dp" android:padding="12dp" android:textIsSelectable="true" />
+        </LinearLayout>
     </LinearLayout>
 </ScrollView>
