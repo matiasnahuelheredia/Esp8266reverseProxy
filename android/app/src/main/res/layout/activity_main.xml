@@ -1,23 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/bg"
-    android:fillViewport="true"
-    android:fitsSystemWindows="true">
+    android:background="@color/bg">
+
+    <com.esp8266.reverseproxy.CyberBackgroundView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:fitsSystemWindows="true">
 
     <LinearLayout
+        android:id="@+id/content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="16dp">
 
-        <TextView style="@style/Cyber.Title" android:layout_width="match_parent"
+        <com.esp8266.reverseproxy.GlitchTextView android:id="@+id/tvTitle" style="@style/Cyber.Title" android:layout_width="match_parent"
             android:layout_height="wrap_content" android:text="ESP//PROXY" />
         <TextView style="@style/Cyber.Subtitle" android:layout_width="match_parent"
             android:layout_height="wrap_content" android:layout_marginTop="4dp"
             android:text="&gt; NEURAL LINK v2.0 // ESP32 BRIDGE" />
-        <View android:layout_width="match_parent" android:layout_height="2dp"
+        <View android:id="@+id/neonLine" android:layout_width="match_parent" android:layout_height="2dp"
             android:layout_marginTop="12dp" android:background="@drawable/bg_neon_line" />
 
         <LinearLayout
@@ -39,9 +48,15 @@
                 <Button android:id="@+id/btnConnect" style="@style/Cyber.Button.Hot" android:layout_width="0dp"
                     android:layout_height="wrap_content" android:layout_weight="1" android:text="Conectar" />
             </LinearLayout>
-            <TextView android:id="@+id/tvState" style="@style/Cyber.Terminal" android:layout_width="match_parent"
-                android:layout_height="wrap_content" android:background="@drawable/bg_terminal"
-                android:padding="12dp" android:text="Desconectado" />
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:background="@drawable/bg_terminal" android:gravity="center_vertical"
+                android:orientation="horizontal" android:padding="12dp">
+                <com.esp8266.reverseproxy.LinkIndicatorView android:id="@+id/linkIndicator"
+                    android:layout_width="36dp" android:layout_height="36dp" />
+                <TextView android:id="@+id/tvState" style="@style/Cyber.Terminal"
+                    android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp" android:layout_weight="1" android:text="Desconectado" />
+            </LinearLayout>
             <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
                 android:orientation="horizontal" android:divider="@drawable/div_v" android:showDividers="middle">
                 <Button android:id="@+id/btnStatus" style="@style/Cyber.Button" android:layout_width="0dp"
@@ -117,4 +132,5 @@
                 android:minHeight="120dp" android:padding="12dp" android:textIsSelectable="true" />
         </LinearLayout>
     </LinearLayout>
-</ScrollView>
+    </ScrollView>
+</FrameLayout>
