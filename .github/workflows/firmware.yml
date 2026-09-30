@@ -9,6 +9,9 @@ on:
     paths: ['firmware/**', '.github/workflows/firmware.yml']
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -38,5 +41,30 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-permissions:
-  contents: write
+  publish-latest:
+    # Cada push a main actualiza el release "latest" con el ultimo build.
+    needs: build
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    concurrency:
+      group: release-latest
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/download-artifact@v5
+        with:
+          name: esp32-reverse-proxy
+      - name: Mover el tag latest al commit actual
+        run: |
+          git tag -f latest
+          git push -f origin latest
+      - name: Publicar release latest
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: latest
+          name: Ultimo build (main)
+          prerelease: true
+          body: Build automatico del ultimo commit de `main` (firmware ESP32). Para versiones fijas crea un tag `vX.Y.Z`.
+          files: esp32-reverse-proxy.bin
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
