@@ -22,10 +22,10 @@
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">@color/neon_cyan</item>
         <item name="android:letterSpacing">0.12</item>
-        <item name="android:textShadowColor">@color/neon_magenta</item>
-        <item name="android:textShadowDx">4</item>
-        <item name="android:textShadowDy">2</item>
-        <item name="android:textShadowRadius">1</item>
+        <item name="android:shadowColor">@color/neon_magenta</item>
+        <item name="android:shadowDx">4</item>
+        <item name="android:shadowDy">2</item>
+        <item name="android:shadowRadius">1</item>
     </style>
     <style name="Cyber.Subtitle" parent="">
         <item name="android:textSize">12sp</item>
