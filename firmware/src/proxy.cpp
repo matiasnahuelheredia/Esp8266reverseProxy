@@ -9,7 +9,6 @@ void ReverseProxy::begin(uint16_t listenPort, const char *host, uint16_t port) {
   port_ = port;
   server_ = new WiFiServer(listenPort);
   server_->begin();
-  server_->setNoDelay(true);
 }
 
 void ReverseProxy::stop() {
@@ -37,9 +36,7 @@ void ReverseProxy::pump(WiFiClient &from, WiFiClient &to, bool &moved) {
   static uint8_t buf[1024];
   int n = from.available();
   if (n <= 0) return;
-  int room = to.availableForWrite();
-  if (room <= 0) return;  // backpressure: el destino aun no puede recibir
-  n = min(min(n, room), (int)sizeof(buf));
+  n = min(n, (int)sizeof(buf));
   n = from.read(buf, n);
   if (n > 0) {
     to.write(buf, n);
@@ -51,8 +48,8 @@ void ReverseProxy::loop() {
   if (!server_) return;
 
   // Nuevas conexiones entrantes
-  if (server_->hasClient()) {
-    WiFiClient c = server_->accept();
+  WiFiClient c = server_->available();
+  if (c) {
     Session *free = nullptr;
     for (auto &s : sessions_)
       if (!s.active) { free = &s; break; }

@@ -8,7 +8,7 @@ struct Config {
   char pass[65];
   char host[64];      // destino del reverse proxy (IP o dominio)
   uint16_t port;      // puerto destino
-  uint16_t listenPort;// puerto en el que escucha el ESP8266
+  uint16_t listenPort;// puerto en el que escucha el ESP32
   uint32_t crc;
 };
 

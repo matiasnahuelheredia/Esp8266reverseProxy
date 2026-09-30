@@ -2,7 +2,7 @@
 
 | Workflow | Disparador | Resultado |
 |---|---|---|
-| `.github/workflows/firmware.yml` | cambios en `firmware/`, tags `v*` | `esp8266-reverse-proxy-nodemcuv2.bin`, `...-esp01_1m.bin` |
+| `.github/workflows/firmware.yml` | cambios en `firmware/`, tags `v*` | `esp32-reverse-proxy.bin` |
 | `.github/workflows/android.yml` | cambios en `android/`, tags `v*` | `esp-proxy-config.apk` |
 
 - Los binarios quedan como *artifacts* del run.

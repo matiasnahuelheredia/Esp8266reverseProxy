@@ -1,5 +1,5 @@
 #pragma once
-#include <ESP8266WiFi.h>
+#include <WiFi.h>
 
 // Reverse proxy TCP transparente: acepta conexiones en `listenPort` y las
 // reenvia a host:port. Funciona con HTTP, WebSocket, SSH, MQTT, etc.

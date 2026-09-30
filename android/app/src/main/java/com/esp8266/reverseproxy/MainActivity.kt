@@ -100,7 +100,7 @@ class MainActivity : AppCompatActivity() {
         devices = adapter.bondedDevices.sortedBy { it.name ?: it.address }
         spinner.adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item,
             devices.map { "${it.name ?: "?"} (${it.address})" })
-        if (devices.isEmpty()) log("No hay dispositivos vinculados. Vincula el HC-05/HC-06 en los ajustes de Android (PIN 1234 o 0000).")
+        if (devices.isEmpty()) log("No hay dispositivos vinculados. Vincula "ESP-Proxy" en los ajustes de Android.")
     }
 
     private fun toggleConnection() {
@@ -209,10 +209,10 @@ class MainActivity : AppCompatActivity() {
         val bytes = withContext(Dispatchers.IO) {
             contentResolver.openInputStream(uri)?.use { it.readBytes() }
         } ?: return log("No se pudo leer el archivo")
-        log("Subiendo ${bytes.size} bytes... no cierres la app ni apagues el ESP8266")
+        log("Subiendo ${bytes.size} bytes... no cierres la app ni apagues el ESP32")
         progress.progress = 0
         bt.uploadFirmware(bytes) { progress.progress = it }
-        log("Firmware instalado; el ESP8266 se reinicia. Vuelve a conectar en unos segundos.")
+        log("Firmware instalado; el ESP32 se reinicia. Vuelve a conectar en unos segundos.")
         bt.disconnect()
         setConnected(false)
     }

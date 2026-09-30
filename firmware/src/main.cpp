@@ -1,21 +1,19 @@
 /*
- * ESP8266 Reverse Proxy configurable por Bluetooth.
- *
- * El ESP8266 no tiene Bluetooth: se usa un modulo HC-05/HC-06 (SPP) en el
- * UART0 remapeado a GPIO13 (RX, D7) y GPIO15 (TX, D8). Los logs de depuracion
- * salen por Serial1 (GPIO2, D4). Protocolo en docs/PROTOCOL.md.
+ * ESP32 Reverse Proxy configurable por Bluetooth (Bluetooth Classic SPP
+ * integrado). Logs por USB (Serial). Protocolo en docs/PROTOCOL.md.
  */
 #include <Arduino.h>
-#include <ESP8266WiFi.h>
-#include <ESP8266httpUpdate.h>
-#include <Updater.h>
+#include <BluetoothSerial.h>
+#include <HTTPUpdate.h>
+#include <Update.h>
+#include <WiFi.h>
 #include <WiFiClientSecure.h>
 
 #include "config.h"
 #include "proxy.h"
 
-#define BT Serial
-#define LOG Serial1
+static BluetoothSerial BT;
+#define LOG Serial
 
 static const size_t OTA_BLOCK = 1024;
 static const uint32_t OTA_TIMEOUT_MS = 15000;
@@ -35,6 +33,7 @@ static uint32_t otaLastByte = 0;
 static uint8_t otaBuf[OTA_BLOCK];
 
 static bool wifiStarted = false;
+static bool proxyRunning = false;
 
 // --- Utilidades ----------------------------------------------------------
 static void reply(const String &s) { BT.print(s); BT.print("\n"); }
@@ -43,6 +42,7 @@ static void err(const char *m) { reply(String("ERR ") + m); }
 
 static void applyConfig() {
   proxy.stop();
+  proxyRunning = false;
   WiFi.persistent(false);
   WiFi.mode(WIFI_STA);
   WiFi.setAutoReconnect(true);
@@ -52,7 +52,6 @@ static void applyConfig() {
     WiFi.begin(cfg.ssid, cfg.pass);
     wifiStarted = true;
   }
-  proxy.begin(cfg.listenPort, cfg.host, cfg.port);
   LOG.printf("Config aplicada: ssid='%s' destino=%s:%u escucha=%u\n", cfg.ssid,
              cfg.host, cfg.port, cfg.listenPort);
 }
@@ -118,7 +117,7 @@ static void cmdScan() {
   int n = WiFi.scanNetworks();
   for (int i = 0; i < n; i++) {
     reply("NET " + String(WiFi.RSSI(i)) + " " +
-          (WiFi.encryptionType(i) == ENC_TYPE_NONE ? "open" : "secure") + " " +
+          (WiFi.encryptionType(i) == WIFI_AUTH_OPEN ? "open" : "secure") + " " +
           WiFi.SSID(i));
   }
   WiFi.scanDelete();
@@ -142,8 +141,8 @@ static void cmdOta(const String &args) {
   md5.trim();
   if (size == 0 || md5.length() != 32) return err("bad args");
 
-  proxy.stop();  // libera RAM y evita trafico durante la actualizacion
-  Update.runAsync(false);
+  proxy.stop();
+  proxyRunning = false;  // libera RAM y evita trafico durante la actualizacion
   if (!Update.setMD5(md5.c_str())) return otaAbort("bad md5");
   if (!Update.begin(size)) {
     String m = "no space (" + String(ESP.getFreeSketchSpace()) + " free)";
@@ -184,17 +183,17 @@ static void otaFeed() {
 static void cmdOtaUrl(const String &url) {
   if (WiFi.status() != WL_CONNECTED) return err("wifi not connected");
   proxy.stop();
-  ESPhttpUpdate.rebootOnUpdate(false);
-  ESPhttpUpdate.setFollowRedirects(HTTPC_FORCE_FOLLOW_REDIRECTS);
+  proxyRunning = false;
+  httpUpdate.rebootOnUpdate(false);
+  httpUpdate.setFollowRedirects(HTTPC_FORCE_FOLLOW_REDIRECTS);
   t_httpUpdate_return r;
   if (url.startsWith("https://")) {
-    BearSSL::WiFiClientSecure c;
+    WiFiClientSecure c;
     c.setInsecure();  // sin verificar certificado; ver docs/SECURITY.md
-    c.setBufferSizes(1024, 1024);
-    r = ESPhttpUpdate.update(c, url);
+    r = httpUpdate.update(c, url);
   } else {
     WiFiClient c;
-    r = ESPhttpUpdate.update(c, url);
+    r = httpUpdate.update(c, url);
   }
   if (r == HTTP_UPDATE_OK) {
     reply("OTA_OK");
@@ -202,7 +201,7 @@ static void cmdOtaUrl(const String &url) {
     delay(300);
     ESP.restart();
   } else {
-    String m = ESPhttpUpdate.getLastErrorString();
+    String m = httpUpdate.getLastErrorString();
     applyConfig();
     err(m.c_str());
   }
@@ -263,10 +262,8 @@ static void btLoop() {
 
 void setup() {
   LOG.begin(115200);
-  BT.setRxBufferSize(2048);
-  BT.begin(BT_BAUD);
-  BT.swap();  // UART0 -> GPIO13 (RX) / GPIO15 (TX)
-  LOG.println("\nESP8266 Reverse Proxy " FW_VERSION);
+  BT.begin(BT_NAME);
+  LOG.println("\nESP32 Reverse Proxy " FW_VERSION " - Bluetooth: " BT_NAME);
 
   configLoad(cfg);
   pending = cfg;
@@ -275,6 +272,12 @@ void setup() {
 
 void loop() {
   btLoop();
-  if (!otaActive) proxy.loop();
+  if (!otaActive) {
+    if (!proxyRunning && WiFi.status() == WL_CONNECTED) {
+      proxy.begin(cfg.listenPort, cfg.host, cfg.port);
+      proxyRunning = true;
+    }
+    proxy.loop();
+  }
   yield();
 }
