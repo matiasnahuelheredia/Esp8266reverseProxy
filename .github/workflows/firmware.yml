@@ -13,11 +13,11 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: '3.11'
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         with:
           path: ~/.platformio
           key: pio-${{ hashFiles('firmware/platformio.ini') }}
@@ -26,7 +26,7 @@ jobs:
         run: pio run -d firmware 
       - name: Renombrar binario
         run: cp firmware/.pio/build/esp32dev/firmware.bin esp32-reverse-proxy.bin
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: esp32-reverse-proxy
           path: esp32-reverse-proxy.bin
