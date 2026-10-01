@@ -1,14 +1,20 @@
 package com.esp8266.reverseproxy
 
 import android.Manifest
+import android.animation.Animator
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothManager
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.text.SpannableString
+import android.text.style.ForegroundColorSpan
+import android.view.View
+import android.view.ViewGroup
 import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
@@ -16,6 +22,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -35,6 +43,10 @@ class MainActivity : AppCompatActivity() {
     private lateinit var tvFile: TextView
     private lateinit var progress: ProgressBar
     private lateinit var tvLog: TextView
+    private lateinit var titleView: GlitchTextView
+    private lateinit var link: LinkIndicatorView
+    private val animators = mutableListOf<Animator>()
+    private val logQueue = Channel<Pair<String, Boolean>>(Channel.UNLIMITED)
 
     private val permLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
         if (granted) loadDevices() else log("Permiso Bluetooth denegado")
@@ -60,6 +72,21 @@ class MainActivity : AppCompatActivity() {
         tvFile = findViewById(R.id.tvFile)
         progress = findViewById(R.id.progress)
         tvLog = findViewById(R.id.tvLog)
+        titleView = findViewById(R.id.tvTitle)
+        link = findViewById(R.id.linkIndicator)
+
+        // Consola con efecto maquina de escribir
+        lifecycleScope.launch { for ((msg, err) in logQueue) typeLine(msg, err) }
+
+        // Efectos: entrada escalonada, bordes que pulsan, linea neon, botones con rebote
+        val content = findViewById<ViewGroup>(R.id.content)
+        for (i in 0 until content.childCount) {
+            val v = content.getChildAt(i)
+            if (v.id != R.id.neonLine) v.enter(i)
+            if (v is ViewGroup) v.pulseBorder(300L * i)?.let { animators.add(it) }
+        }
+        findViewById<View>(R.id.neonLine).pulseAlpha()?.let { animators.add(it) }
+        applyPress(content)
 
         findViewById<Button>(R.id.btnRefresh).setOnClickListener { ensurePermission() }
         btnConnect.setOnClickListener { toggleConnection() }
@@ -71,16 +98,42 @@ class MainActivity : AppCompatActivity() {
         findViewById<Button>(R.id.btnUpload).setOnClickListener { withBt("Subir firmware") { uploadFirmware() } }
         findViewById<Button>(R.id.btnReboot).setOnClickListener { withBt("Reiniciar") { bt.command("REBOOT") } }
 
+        log("BOOT NEURAL LINK v2.0")
+        log("INICIALIZANDO BUS BLUETOOTH...")
         ensurePermission()
     }
 
     override fun onDestroy() {
+        animators.forEach { it.cancel() }
         bt.disconnect()
         super.onDestroy()
     }
 
-    private fun log(msg: String) {
-        tvLog.append(msg + "\n")
+    private fun log(msg: String, error: Boolean = false) {
+        logQueue.trySend(msg to error)
+        if (error) tvLog.shake()
+    }
+
+    /** Escribe una linea en la consola caracter a caracter (verde; magenta si es error). */
+    private suspend fun typeLine(msg: String, error: Boolean) {
+        val color = if (error) Color.rgb(255, 43, 214) else Color.rgb(57, 255, 20)
+        val text = "> " + msg + "\n"
+        val animate = Fx.enabled(this)
+        val chunk = if (animate) maxOf(2, text.length / 28) else text.length
+        var i = 0
+        while (i < text.length) {
+            val end = minOf(text.length, i + chunk)
+            val part = SpannableString(text.substring(i, end))
+            part.setSpan(ForegroundColorSpan(color), 0, part.length, 0)
+            tvLog.append(part)
+            i = end
+            if (animate && i < text.length) delay(14)
+        }
+    }
+
+    private fun applyPress(v: View) {
+        if (v is Button) v.neonPress()
+        if (v is ViewGroup) for (i in 0 until v.childCount) applyPress(v.getChildAt(i))
     }
 
     // --- Bluetooth ---
@@ -115,14 +168,15 @@ class MainActivity : AppCompatActivity() {
             try {
                 bt.connect(dev)
                 setConnected(true)
-                log("Conectado")
+                titleView.burst(14)
+                log("ENLACE ESTABLECIDO")
                 bt.command("PING")
                 showStatus()
                 loadConfig()
             } catch (e: Exception) {
                 bt.disconnect()
                 setConnected(false)
-                log("Error de conexion: ${e.message}")
+                log("Error de conexion: ${e.message}", true)
             } finally {
                 btnConnect.isEnabled = true
             }
@@ -132,6 +186,8 @@ class MainActivity : AppCompatActivity() {
     private fun setConnected(c: Boolean) {
         btnConnect.text = if (c) "Desconectar" else "Conectar"
         tvState.text = if (c) "Conectado" else "Desconectado"
+        link.setConnected(c)
+        tvState.flicker()
     }
 
     private fun withBt(what: String, block: suspend () -> Unit) {
@@ -140,7 +196,7 @@ class MainActivity : AppCompatActivity() {
             try {
                 block()
             } catch (e: Exception) {
-                log("$what: ${e.message}")
+                log("$what: ${e.message}", true)
             }
         }
     }
@@ -155,6 +211,7 @@ class MainActivity : AppCompatActivity() {
             "Escucha :${kv["listen"]} -> ${kv["upstream"]}\n" +
             "Sesiones: ${kv["sessions"]}  Heap: ${kv["heap"]}  FW: ${kv["fw"]}"
         tvState.text = s
+        tvState.flicker()
     }
 
     private suspend fun loadConfig() {
@@ -200,6 +257,7 @@ class MainActivity : AppCompatActivity() {
         bt.command("SET port $port")
         bt.command("SET listen $listen")
         bt.command("SAVE", 10000)
+        titleView.burst(14)
         log("Configuracion guardada y aplicada")
         showStatus()
     }
@@ -211,7 +269,8 @@ class MainActivity : AppCompatActivity() {
         } ?: return log("No se pudo leer el archivo")
         log("Subiendo ${bytes.size} bytes... no cierres la app ni apagues el ESP32")
         progress.progress = 0
-        bt.uploadFirmware(bytes) { progress.progress = it }
+        bt.uploadFirmware(bytes) { progress.setProgress(it, true) }
+        titleView.burst(20)
         log("Firmware instalado; el ESP32 se reinicia. Vuelve a conectar en unos segundos.")
         bt.disconnect()
         setConnected(false)

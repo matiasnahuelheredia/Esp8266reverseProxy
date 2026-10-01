@@ -1,3 +1,76 @@
 <resources>
-    <style name="Theme.App" parent="Theme.Material3.DayNight.NoActionBar" />
+    <style name="Theme.App" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="colorPrimary">@color/neon_cyan</item>
+        <item name="colorOnPrimary">@color/bg</item>
+        <item name="colorSecondary">@color/neon_magenta</item>
+        <item name="colorOnSecondary">@color/bg</item>
+        <item name="colorSurface">@color/surface</item>
+        <item name="colorOnSurface">@color/text</item>
+        <item name="android:colorBackground">@color/bg</item>
+        <item name="android:windowBackground">@color/bg</item>
+        <item name="android:statusBarColor">@color/bg</item>
+        <item name="android:navigationBarColor">@color/bg</item>
+        <item name="android:textColorPrimary">@color/text</item>
+        <item name="android:textColorSecondary">@color/dim</item>
+        <item name="android:textColorHint">@color/dim</item>
+        <item name="android:fontFamily">monospace</item>
+    </style>
+
+    <!-- Texto -->
+    <style name="Cyber.Title" parent="">
+        <item name="android:textSize">28sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/neon_cyan</item>
+        <item name="android:letterSpacing">0.12</item>
+        <item name="android:shadowColor">@color/neon_magenta</item>
+        <item name="android:shadowDx">4</item>
+        <item name="android:shadowDy">2</item>
+        <item name="android:shadowRadius">1</item>
+    </style>
+    <style name="Cyber.Subtitle" parent="">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">@color/dim</item>
+        <item name="android:letterSpacing">0.08</item>
+    </style>
+    <style name="Cyber.Section" parent="">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/neon_yellow</item>
+        <item name="android:letterSpacing">0.15</item>
+    </style>
+    <style name="Cyber.Body" parent="">
+        <item name="android:textSize">13sp</item>
+        <item name="android:textColor">@color/text</item>
+    </style>
+    <style name="Cyber.Terminal" parent="">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">@color/neon_green</item>
+    </style>
+
+    <!-- Campos -->
+    <style name="Cyber.Input" parent="Widget.AppCompat.EditText">
+        <item name="android:background">@drawable/bg_input</item>
+        <item name="android:padding">12dp</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/neon_cyan</item>
+        <item name="android:textColorHint">@color/dim</item>
+    </style>
+
+    <!-- Botones -->
+    <style name="Cyber.Button" parent="Widget.Material3.Button.OutlinedButton">
+        <item name="android:textColor">@color/neon_cyan</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:letterSpacing">0.1</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="strokeColor">@color/neon_cyan</item>
+        <item name="strokeWidth">1dp</item>
+        <item name="cornerRadius">0dp</item>
+        <item name="rippleColor">@color/neon_magenta</item>
+    </style>
+    <style name="Cyber.Button.Hot">
+        <item name="android:textColor">@color/neon_magenta</item>
+        <item name="strokeColor">@color/neon_magenta</item>
+        <item name="rippleColor">@color/neon_cyan</item>
+    </style>
 </resources>
